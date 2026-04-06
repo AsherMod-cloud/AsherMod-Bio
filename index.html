@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AsherMod - Bio Link</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0f;
+            --fg: #f0f0f5;
+            --muted: #6b7280;
+            --accent: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.4);
+            --card: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--fg);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .font-display {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        /* Animated Smoke Background */
+        .smoke-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .smoke-layer {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            background: 
+                radial-gradient(ellipse at 20% 30%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 70%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(30, 58, 138, 0.2) 0%, transparent 60%);
+            animation: smokeMove 20s ease-in-out infinite;
+        }
+
+        .smoke-layer:nth-child(2) {
+            animation-delay: -5s;
+            animation-duration: 25s;
+            opacity: 0.7;
+            background: 
+                radial-gradient(ellipse at 70% 20%, rgba(59, 130, 246, 0.12) 0%, transparent 45%),
+                radial-gradient(ellipse at 30% 80%, rgba(99, 102, 241, 0.1) 0%, transparent 50%);
+        }
+
+        .smoke-layer:nth-child(3) {
+            animation-delay: -10s;
+            animation-duration: 30s;
+            opacity: 0.5;
+            background: 
+                radial-gradient(ellipse at 60% 60%, rgba(30, 64, 175, 0.15) 0%, transparent 55%),
+                radial-gradient(ellipse at 40% 30%, rgba(59, 130, 246, 0.1) 0%, transparent 40%);
+        }
+
+        @keyframes smokeMove {
+            0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+            25% { transform: translate(2%, 3%) rotate(1deg) scale(1.02); }
+            50% { transform: translate(-1%, 2%) rotate(-1deg) scale(1.01); }
+            75% { transform: translate(1%, -2%) rotate(0.5deg) scale(1.03); }
+        }
+
+        /* Noise overlay */
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        }
+
+        /* Floating particles */
+        .particle {
+            position: fixed;
+            width: 3px;
+            height: 3px;
+            background: rgba(59, 130, 246, 0.6);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 2;
+            animation: floatParticle 15s linear infinite;
+        }
+
+        @keyframes floatParticle {
+            0% {
+                transform: translateY(100vh) scale(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) scale(1);
+                opacity: 0;
+            }
+        }
+
+        /* Main content */
+        .main-content {
+            position: relative;
+            z-index: 10;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1rem;
+        }
+
+        /* Share button */
+        .share-btn {
+            position: fixed;
+            top: 1.5rem;
+            right: 1.5rem;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--card);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .share-btn:hover {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: var(--accent);
+            transform: scale(1.1);
+        }
+
+        .share-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Profile section */
+        .profile-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 2rem;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .avatar-container {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .avatar-ring {
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), #8b5cf6, var(--accent));
+            background-size: 300% 300%;
+            animation: ringRotate 4s linear infinite;
+        }
+
+        @keyframes ringRotate {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .avatar {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1e3a5f, #0f172a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 3px solid var(--bg);
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .avatar-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: var(--accent-glow);
+            filter: blur(25px);
+            z-index: -1;
+            animation: glowPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes glowPulse {
+            0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 0.8; transform: translate(-50%, -50%) scale(1.1); }
+        }
+
+        .profile-name {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #fff, #a5b4fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .profile-bio {
+            color: var(--muted);
+            font-size: 0.95rem;
+            text-align: center;
+            max-width: 280px;
+        }
+
+        /* Links container */
+        .links-container {
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.875rem;
+        }
+
+        .link-item {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .link-btn {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(59, 130, 246, 0.05));
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: var(--fg);
+            font-weight: 500;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .link-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .link-btn:hover::before {
+            left: 100%;
+        }
+
+        .link-btn:hover {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(59, 130, 246, 0.1));
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(59, 130, 246, 0.2);
+        }
+
+        .link-btn:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        .link-btn:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+
+        .link-icon {
+            width: 22px;
+            height: 22px;
+            flex-shrink: 0;
+            opacity: 0.9;
+        }
+
+        .link-text {
+            flex: 1;
+            text-align: center;
+            margin-right: 22px;
+        }
+
+        /* Donation buttons */
+        .donation-section {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .donation-title {
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--muted);
+            margin-bottom: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .donation-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+        }
+
+        .donation-btn {
+            padding: 0.875rem 0.5rem;
+            border-radius: 10px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            color: var(--fg);
+            font-weight: 500;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .donation-btn:hover {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: rgba(59, 130, 246, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .donation-btn:active {
+            transform: translateY(0) scale(0.97);
+        }
+
+        .donation-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.7rem;
+        }
+
+        .dana-icon { background: linear-gradient(135deg, #108ee9, #0066b3); }
+        .saweria-icon { background: linear-gradient(135deg, #6ae0ac, #2fb26a); }
+        .sociabuzz-icon { background: linear-gradient(135deg, #f59e0b, #d97706); }
+
+        /* Footer */
+        .footer {
+            margin-top: auto;
+            padding-top: 2rem;
+            text-align: center;
+            opacity: 0;
+            animation: fadeInUp 0.6s ease 1s forwards;
+        }
+
+        .footer-url {
+            color: var(--muted);
+            font-size: 0.8rem;
+            opacity: 0.6;
+        }
+
+        /* Share Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a2e, #0f0f1a);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 350px;
+            width: 90%;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-title {
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .modal-options {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .modal-option {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-option:hover {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: var(--accent);
+            transform: translateY(-3px);
+        }
+
+        .modal-close {
+            margin-top: 1.5rem;
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 8px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            color: var(--fg);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Mobile adjustments */
+        @media (max-width: 480px) {
+            .profile-name {
+                font-size: 1.5rem;
+            }
+            
+            .avatar {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .avatar-glow {
+                width: 120px;
+                height: 120px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Smoke Background -->
+    <div class="smoke-container">
+        <div class="smoke-layer"></div>
+        <div class="smoke-layer"></div>
+        <div class="smoke-layer"></div>
+    </div>
+    
+    <!-- Noise Overlay -->
+    <div class="noise-overlay"></div>
+    
+    <!-- Floating Particles Container -->
+    <div id="particles"></div>
+
+    <!-- Share Button -->
+    <button class="share-btn" id="shareBtn" aria-label="Share profile">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="18" cy="5" r="3"></circle>
+            <circle cx="6" cy="12" r="3"></circle>
+            <circle cx="18" cy="19" r="3"></circle>
+            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+        </svg>
+    </button>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Profile Section -->
+        <section class="profile-section">
+            <div class="avatar-container">
+                <div class="avatar-glow"></div>
+                <div class="avatar-ring"></div>
+                <div class="avatar">
+                    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="50" cy="35" r="18" fill="#94a3b8"/>
+                        <ellipse cx="50" cy="85" rx="30" ry="25" fill="#94a3b8"/>
+                        <circle cx="50" cy="35" r="15" fill="#64748b"/>
+                        <ellipse cx="50" cy="82" rx="26" ry="22" fill="#64748b"/>
+                    </svg>
+                </div>
+            </div>
+            <h1 class="profile-name font-display">AsherMod</h1>
+            <p class="profile-bio">Hanya Orang Biasa >_ <</p>
+        </section>
+
+        <!-- Links -->
+        <div class="links-container" id="linksContainer">
+            <div class="link-item" style="animation-delay: 0.2s;">
+                <a href="https://whatsapp.com/channel/0029VayP2ST4yltJsLKtqo2G class="link-btn">
+                    <!-- WhatsApp Icon -->
+                    <svg class="link-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                    </svg>
+                    <span class="link-text">Channel Viral GamerZ | Share Game Mods</span>
+                </a>
+            </div>
+            
+            <div class="link-item" style="animation-delay: 0.3s;">
+                <a href="https://whatsapp.com/channel/0029Vb40CwnL2ATxKtEIm046" class="link-btn">
+                    <!-- WhatsApp Icon -->
+                    <svg class="link-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                    </svg>
+                    <span class="link-text">Channel Emulator Games ID | Share Game Emulator</span>
+                </a>
+            </div>
+            
+            <div class="link-item" style="animation-delay: 0.4s;">
+                <a href="https://request-game-mods.vercel.app/" class="link-btn">
+                    <svg class="link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                    <span class="link-text">Request | No Spam!!</span>
+                </a>
+            </div>
+        </div>
+
+                <!-- Donation Section -->
+        <section class="donation-section">
+            <p class="donation-title">Support Me</p>
+            <div class="donation-grid">
+                <!-- TOMBOL DANA DIUBAH: Tidak pakai href, tapi pakai onclick -->
+                <button class="donation-btn" onclick="openDanaModal()" style="animation: fadeInUp 0.6s ease 0.5s forwards; opacity: 0; border: none; cursor: pointer;">
+                    <div class="donation-icon dana-icon">D</div>
+                    <span>Dana</span>
+                </button>
+                
+                <a href="https://saweria.co/AsherMod" class="donation-btn" style="animation: fadeInUp 0.6s ease 0.6s forwards; opacity: 0;">
+                    <div class="donation-icon saweria-icon">S</div>
+                    <span>Saweria</span>
+                </a>
+                <a href="https://sociabuzz.com/ashermod/support" class="donation-btn" style="animation: fadeInUp 0.6s ease 0.7s forwards; opacity: 0;">
+                    <div class="donation-icon sociabuzz-icon">SB</div>
+                    <span>Sociabuzz</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p class="footer-url">ashermod.bio.link</p>
+        </footer>
+    </main>
+
+    <!-- MODAL QR CODE DANA (Tambahkan ini setelah modal share) -->
+    <div class="modal-overlay" id="danaModal">
+        <div class="modal-content" style="text-align: center;">
+            <h2 class="modal-title font-display">Scan Dana QR</h2>
+            <!-- GANTI SRC DI BAWAH INI DENGAN LINK GAMBAR GITHUB KAMU -->
+            <img src="https://i.imgur.com/qI4ahtN.jpeg" alt="Dana QR Code" style="width: 100%; max-width: 250px; border-radius: 12px; margin: 0 auto 1rem; display: block;">
+            
+            <!-- Teks instruksi (opsional) -->
+            <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 1rem;">
+                Scan QR di atas menggunakan aplikasi Dana
+            </p>
+
+            <button class="modal-close" onclick="closeDanaModal()">Tutup</button>
+        </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div class="modal-overlay" id="shareModal">
+        <div class="modal-content">
+            <h2 class="modal-title font-display">Share Profile</h2>
+            <div class="modal-options">
+                <button class="modal-option" aria-label="Copy link">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                    </svg>
+                </button>
+                <button class="modal-option" aria-label="Share to WhatsApp">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                    </svg>
+                </button>
+                <button class="modal-option" aria-label="Share to Telegram">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+                    </svg>
+                </button>
+                <button class="modal-option" aria-label="Share to Twitter">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                    </svg>
+                </button>
+            </div>
+            <button class="modal-close" id="modalClose">Tutup</button>
+        </div>
+    </div>
+
+    <script>
+        // Initialize particles
+        function createParticles() {
+            const container = document.getElementById('particles');
+            if (!container) return;
+            
+            const particleCount = 15;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particle.style.animationDuration = (10 + Math.random() * 10) + 's';
+                particle.style.width = (2 + Math.random() * 3) + 'px';
+                particle.style.height = particle.style.width;
+                container.appendChild(particle);
+            }
+        }
+
+        // Share modal functionality
+        const shareBtn = document.getElementById('shareBtn');
+        const shareModal = document.getElementById('shareModal');
+        const modalClose = document.getElementById('modalClose');
+
+        if (shareBtn && shareModal && modalClose) {
+            shareBtn.addEventListener('click', function() {
+                shareModal.classList.add('active');
+            });
+
+            modalClose.addEventListener('click', function() {
+                shareModal.classList.remove('active');
+            });
+
+            shareModal.addEventListener('click', function(e) {
+                if (e.target === shareModal) {
+                    shareModal.classList.remove('active');
+                }
+            });
+
+            // Keyboard accessibility
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && shareModal.classList.contains('active')) {
+                    shareModal.classList.remove('active');
+                }
+            });
+        }
+
+        // Copy link functionality
+        const copyBtn = document.querySelector('.modal-option[aria-label="Copy link"]');
+        if (copyBtn) {
+            copyBtn.addEventListener('click', function() {
+                navigator.clipboard.writeText(window.location.href).then(function() {
+                    const originalBg = copyBtn.style.background;
+                    copyBtn.style.background = 'rgba(59, 130, 246, 0.3)';
+                    setTimeout(function() {
+                        copyBtn.style.background = originalBg;
+                    }, 500);
+                });
+            });
+        }
+
+        // Link hover sound effect (subtle feedback)
+        const linkBtns = document.querySelectorAll('.link-btn, .donation-btn');
+        linkBtns.forEach(function(btn) {
+            btn.addEventListener('mouseenter', function() {
+                this.style.transition = 'all 0.15s cubic-bezier(0.4, 0, 0.2, 1)';
+            });
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+        });
+
+        // Intersection Observer for scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.link-item').forEach(function(item) {
+            observer.observe(item);
+        });
+        
+   const danaModal = document.getElementById('danaModal');
+
+        function openDanaModal() {
+            if(danaModal) danaModal.classList.add('active');
+        }
+
+        function closeDanaModal() {
+            if(danaModal) danaModal.classList.remove('active');
+        }
+
+        // Tutup modal kalau klik area luar (overlay)
+        if(danaModal) {
+            danaModal.addEventListener('click', function(e) {
+                if (e.target === danaModal) {
+                    closeDanaModal();
+                }
+            });
+        }
+    </script>
+</body>
+</html>
