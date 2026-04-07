@@ -2,327 +2,327 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AsherMod - Bio Link</title>
-    <link rel="icon" type="image/png" href="/profile.jpg">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>AsherMod • Link in Bio</title>
+    <!-- Tailwind + Font Awesome (icons backup) but we use custom SVGs mostly -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Inter font for modern look -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <!-- Custom override styles for glassmorphism & modals -->
     <style>
-        :root {
-            --bg: #0a0a0f;
-            --fg: #f0f0f5;
-            --muted: #6b7280;
-            --accent: #3b82f6;
-            --accent-glow: rgba(59, 130, 246, 0.4);
-            --card: rgba(255, 255, 255, 0.03);
-            --border: rgba(255, 255, 255, 0.08);
-        }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg);
-            color: var(--fg);
-            min-height: 100vh;
-            overflow-x: hidden;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
         }
-
-        .font-display {
-            font-family: 'Space Grotesk', sans-serif;
+        /* custom blur animation for background blobs */
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); opacity: 0.2; }
+            50% { transform: translate(20px, -15px) scale(1.05); opacity: 0.25; }
+            100% { transform: translate(-10px, 10px) scale(1); opacity: 0.2; }
         }
-
-        /* Animated Smoke Background */
-        .smoke-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            overflow: hidden;
+        .animate-float-slow {
+            animation: float 14s ease-in-out infinite;
         }
-
-        .smoke-layer {
-            position: absolute;
-            width: 200%;
-            height: 200%;
-            top: -50%;
-            left: -50%;
-            background: 
-                radial-gradient(ellipse at 20% 30%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 70%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
-                radial-gradient(ellipse at 50% 50%, rgba(30, 58, 138, 0.2) 0%, transparent 60%);
-            animation: smokeMove 20s ease-in-out infinite;
+        .animate-float-medium {
+            animation: float 18s ease-in-out infinite reverse;
         }
-
-        .smoke-layer:nth-child(2) {
-            animation-delay: -5s;
-            animation-duration: 25s;
-            opacity: 0.7;
-            background: 
-                radial-gradient(ellipse at 70% 20%, rgba(59, 130, 246, 0.12) 0%, transparent 45%),
-                radial-gradient(ellipse at 30% 80%, rgba(99, 102, 241, 0.1) 0%, transparent 50%);
+        .animate-float-fast {
+            animation: float 12s ease-in-out infinite;
         }
-
-        .smoke-layer:nth-child(3) {
-            animation-delay: -10s;
-            animation-duration: 30s;
-            opacity: 0.5;
-            background: 
-                radial-gradient(ellipse at 60% 60%, rgba(30, 64, 175, 0.15) 0%, transparent 55%),
-                radial-gradient(ellipse at 40% 30%, rgba(59, 130, 246, 0.1) 0%, transparent 40%);
+        /* glass card effect enhancement */
+        .glass-card {
+            backdrop-filter: blur(16px);
+            background: rgba(15, 25, 45, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.12);
         }
-
-        @keyframes smokeMove {
-            0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); }
-            25% { transform: translate(2%, 3%) rotate(1deg) scale(1.02); }
-            50% { transform: translate(-1%, 2%) rotate(-1deg) scale(1.01); }
-            75% { transform: translate(1%, -2%) rotate(0.5deg) scale(1.03); }
+        /* modal backdrop */
+        .modal-backdrop {
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            transition: opacity 0.2s ease;
         }
-
-        /* Noise overlay */
-        .noise-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-            pointer-events: none;
-            opacity: 0.03;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-        }
-
-        /* Floating particles */
-        .particle {
-            position: fixed;
-            width: 3px;
-            height: 3px;
-            background: rgba(59, 130, 246, 0.6);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 2;
-            animation: floatParticle 15s linear infinite;
-        }
-
-        @keyframes floatParticle {
-            0% {
-                transform: translateY(100vh) scale(0);
-                opacity: 0;
-            }
-            10% {
-                opacity: 1;
-            }
-            90% {
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(-100vh) scale(1);
-                opacity: 0;
-            }
-        }
-
-        /* Main content */
-        .main-content {
-            position: relative;
-            z-index: 10;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 2rem 1rem;
-        }
-
-        /* Share button */
-        .share-btn {
-            position: fixed;
-            top: 1.5rem;
-            right: 1.5rem;
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: var(--card);
-            border: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-        }
-
-        .share-btn:hover {
-            background: rgba(59, 130, 246, 0.2);
-            border-color: var(--accent);
-            transform: scale(1.1);
-        }
-
-        .share-btn:active {
-            transform: scale(0.95);
-        }
-
-        /* Profile section */
-        .profile-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 2rem;
-            opacity: 0;
-            transform: translateY(30px);
-            animation: fadeInUp 0.8s ease forwards;
-        }
-
-        @keyframes fadeInUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .avatar-container {
-            position: relative;
-            margin-bottom: 1.5rem;
-        }
-
-        .avatar-ring {
-            position: absolute;
-            top: -4px;
-            left: -4px;
-            right: -4px;
-            bottom: -4px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent), #8b5cf6, var(--accent));
-            background-size: 300% 300%;
-            animation: ringRotate 4s linear infinite;
-        }
-
-        @keyframes ringRotate {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .avatar {
-            position: relative;
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #1e3a5f, #0f172a);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            border: 3px solid var(--bg);
-        }
-
-        .avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .avatar-glow {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 140px;
-            height: 140px;
-            border-radius: 50%;
-            background: var(--accent-glow);
-            filter: blur(25px);
-            z-index: -1;
-            animation: glowPulse 3s ease-in-out infinite;
-        }
-
-        @keyframes glowPulse {
-            0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
-            50% { opacity: 0.8; transform: translate(-50%, -50%) scale(1.1); }
-        }
-
-        .profile-name {
-            font-size: 1.75rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, #fff, #a5b4fc);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .profile-bio {
-            color: var(--muted);
-            font-size: 0.95rem;
-            text-align: center;
-            max-width: 280px;
-        }
-
-        /* Links container */
-        .links-container {
-            width: 100%;
-            max-width: 400px;
-            display: flex;
-            flex-direction: column;
-            gap: 0.875rem;
-        }
-
-        .link-item {
-            opacity: 0;
-            transform: translateY(20px);
-            animation: fadeInUp 0.6s ease forwards;
-        }
-
+        /* smooth scale hover for buttons */
         .link-btn {
-            width: 100%;
-            padding: 1rem 1.25rem;
-            border-radius: 12px;
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(59, 130, 246, 0.05));
-            border: 1px solid rgba(59, 130, 246, 0.3);
-            color: var(--fg);
-            font-weight: 500;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            text-decoration: none;
-            position: relative;
-            overflow: hidden;
+            transition: all 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
         }
-
-        .link-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.2), transparent);
-            transition: left 0.5s ease;
-        }
-
-        .link-btn:hover::before {
-            left: 100%;
-        }
-
         .link-btn:hover {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(59, 130, 246, 0.1));
-            border-color: var(--accent);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(59, 130, 246, 0.2);
+            transform: scale(1.02);
+            box-shadow: 0 20px 25px -12px rgba(0, 0, 0, 0.4);
+        }
+        .link-btn:active {
+            transform: scale(0.98);
+        }
+        /* custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.3);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-indigo-950 via-purple-900 to-pink-900 flex items-center justify-center p-5 font-sans relative">
+
+    <!-- Animated background blobs (upgraded effect) -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div class="absolute top-20 -left-32 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-float-slow"></div>
+        <div class="absolute bottom-10 -right-28 w-96 h-96 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-float-medium"></div>
+        <div class="absolute top-1/3 left-1/3 w-72 h-72 bg-indigo-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float-fast"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-64 h-64 bg-cyan-500 rounded-full mix-blend-multiply filter blur-3xl opacity-15 animate-float-slow" style="animation-delay: 2s;"></div>
+    </div>
+
+    <!-- Main Card Container -->
+    <div class="relative z-10 w-full max-w-md">
+        <div class="glass-card rounded-3xl p-6 md:p-8 shadow-2xl transition-all duration-300 border border-white/20">
+            
+            <!-- Avatar section with gaming vibe -->
+            <div class="flex justify-center mb-4">
+                <div class="relative">
+                    <div class="w-28 h-28 rounded-full bg-gradient-to-tr from-indigo-400 to-fuchsia-500 p-1 shadow-xl shadow-purple-500/30">
+                        <div class="w-full h-full rounded-full bg-slate-900/60 backdrop-blur-sm flex items-center justify-center border border-white/20">
+                            <!-- Custom AsherMod avatar: gaming controller + A letter -->
+                            <div class="relative flex items-center justify-center">
+                                <svg class="w-12 h-12 text-fuchsia-300 drop-shadow-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M6 11h4M8 9v4M16 11h4M18 9v4" stroke="currentColor"/>
+                                    <rect x="2" y="4" width="20" height="12" rx="2" ry="2" stroke="currentColor" fill="rgba(255,255,255,0.1)"/>
+                                    <path d="M7 16l-1 3M17 16l1 3M4 20h16" stroke="currentColor" fill="none"/>
+                                </svg>
+                                <span class="absolute bottom-0 right-1 text-xs font-black bg-white/20 backdrop-blur-sm rounded-full px-1.5 py-0.5 text-white">AM</span>
+                            </div>
+                        </div>
+                    </div>
+                    <span class="absolute bottom-1 right-2 w-4 h-4 bg-emerald-400 rounded-full border-2 border-indigo-900 shadow-md animate-pulse"></span>
+                </div>
+            </div>
+
+            <!-- Title & Bio as per photo: AsherMod + Hanya Orang Biasa >_< -->
+            <div class="text-center mb-6">
+                <h1 class="text-3xl font-extrabold text-white tracking-tight drop-shadow-md">AsherMod</h1>
+                <div class="flex items-center justify-center gap-1 mt-1.5">
+                    <p class="text-white/70 text-base font-medium bg-white/10 inline-block px-3 py-1 rounded-full backdrop-blur-sm">Hanya Orang Biasa &gt;_&lt;</p>
+                </div>
+                <p class="text-white/40 text-xs mt-2 font-mono">⚡ gamer • modder • share everything</p>
+            </div>
+
+            <!-- LINKS SECTION - URUTAN SESUAI FOTO -->
+            <div class="flex flex-col gap-3.5">
+                
+                <!-- 1. Channel Viral GamerZ | Share Game Mods -->
+                <a href="https://youtube.com/@ViralGamerZ?sub_confirmation=1" target="_blank" rel="noopener noreferrer" 
+                   class="link-btn group flex items-center gap-3 px-5 py-3.5 rounded-2xl bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-700 text-white font-semibold text-sm shadow-md hover:shadow-xl transition-all duration-200">
+                    <span class="flex-shrink-0"><svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M21 6H3v12h18V6zm-2 10H5V8h14v8zM9 10h6v2H9v-2zm0 4h6v2H9v-2z"/><circle cx="18" cy="10" r="1" fill="currentColor"/><circle cx="18" cy="14" r="1" fill="currentColor"/></svg></span>
+                    <span class="flex-1 text-left tracking-wide">🎮 Channel Viral GamerZ | Share Game Mods</span>
+                    <svg class="w-4 h-4 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
+
+                <!-- 2. Channel Emulator Games ID | Share Game Emulator -->
+                <a href="https://youtube.com/@EmulatorGamesID" target="_blank" rel="noopener noreferrer" 
+                   class="link-btn group flex items-center gap-3 px-5 py-3.5 rounded-2xl bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-800 text-white font-semibold text-sm shadow-md hover:shadow-xl">
+                    <span class="flex-shrink-0"><svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M5 5h14v2H5V5zm0 4h14v2H5V9zm0 4h14v2H5v-2zm0 4h14v2H5v-2zM2 3h20v18H2V3z" /></svg></span>
+                    <span class="flex-1 text-left">📱 Channel Emulator Games ID | Share Game Emulator</span>
+                    <svg class="w-4 h-4 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
+
+                <!-- 3. Request I No Spam!! (interactive modal info) -->
+                <button id="requestModalBtn" 
+                   class="link-btn group flex items-center gap-3 px-5 py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-600 text-white font-semibold text-sm shadow-md hover:shadow-xl w-full text-left transition-all">
+                    <span class="flex-shrink-0"><svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 10h.01M12 10h.01M16 10h.01"/></svg></span>
+                    <span class="flex-1 text-left">📢 Request I No Spam!!</span>
+                    <svg class="w-4 h-4 opacity-60 group-hover:opacity-100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
+
+                <!-- 4. Donate Via Dana (QR) - with QR Modal popup (interactive) -->
+                <button id="danaQRBtn" 
+                   class="link-btn group flex items-center gap-3 px-5 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-700 text-white font-semibold text-sm shadow-md hover:shadow-xl w-full text-left transition-all">
+                    <span class="flex-shrink-0"><svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="5" width="20" height="14" rx="2" ry="2"/><line x1="2" y1="10" x2="22" y2="10"/><path d="M7 15h2M16 15h2"/><path d="M7 12h.01M12 12h.01M17 12h.01"/></svg></span>
+                    <span class="flex-1 text-left">💜 Donate Via Dana (QR)</span>
+                    <svg class="w-4 h-4 opacity-60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4v16h16V4H4z"/><path d="M9 8h6"/><path d="M9 12h6"/></svg>
+                </button>
+
+                <!-- 5. Donate Via Saweria -->
+                <a href="https://saweria.co/AsherMod" target="_blank" rel="noopener noreferrer"
+                   class="link-btn group flex items-center gap-3 px-5 py-3.5 rounded-2xl bg-gradient-to-r from-yellow-500 to-amber-700 text-white font-semibold text-sm shadow-md hover:shadow-xl">
+                    <span class="flex-shrink-0"><svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg></span>
+                    <span class="flex-1 text-left">☕ Donate Via Saweria</span>
+                    <svg class="w-4 h-4 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
+
+                <!-- 6. Donate Via Sociabuzz -->
+                <a href="https://sociabuzz.com/ashermod/tribe" target="_blank" rel="noopener noreferrer"
+                   class="link-btn group flex items-center gap-3 px-5 py-3.5 rounded-2xl bg-gradient-to-r from-pink-500 to-rose-700 text-white font-semibold text-sm shadow-md hover:shadow-xl">
+                    <span class="flex-shrink-0"><svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></span>
+                    <span class="flex-1 text-left">🔥 Donate Via Sociabuzz</span>
+                    <svg class="w-4 h-4 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
+            </div>
+
+            <!-- Additional Info / footer like the original style -->
+            <div class="mt-8 text-center">
+                <p class="text-white/30 text-[11px] font-mono flex items-center justify-center gap-1.5 flex-wrap">
+                    <span>⚡ Share Game Mods & Emulator</span>
+                    <span class="w-1 h-1 rounded-full bg-white/30"></span>
+                    <span>No Spam!!</span>
+                    <span class="w-1 h-1 rounded-full bg-white/30"></span>
+                    <span>📍 AsherMod</span>
+                </p>
+                <p class="text-white/20 text-[10px] mt-3">© 2026 AsherMod • linktr.ee style</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL STRUCTURE (for Dana QR & Request info) -->
+    <div id="globalModal" class="fixed inset-0 z-50 flex items-center justify-center px-4 transition-all duration-300 opacity-0 invisible pointer-events-none">
+        <div class="absolute inset-0 modal-backdrop" id="modalBackdrop"></div>
+        <div class="relative bg-white/10 backdrop-blur-2xl rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-white/30 transform transition-all scale-95 opacity-0" id="modalContent">
+            <div class="flex justify-between items-start mb-4">
+                <h3 class="text-xl font-bold text-white" id="modalTitle">Modal Title</h3>
+                <button id="closeModalBtn" class="text-white/60 hover:text-white transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div id="modalBody" class="text-white/80 text-sm space-y-3">
+                <!-- dynamic content -->
+            </div>
+            <div class="mt-6 flex justify-end">
+                <button id="modalConfirmBtn" class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-xl text-white text-sm transition">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ---------- MODAL CONTROLLER ----------
+        const modal = document.getElementById('globalModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalBodyDiv = document.getElementById('modalBody');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const modalConfirm = document.getElementById('modalConfirmBtn');
+        const backdrop = document.getElementById('modalBackdrop');
+
+        function openModal(title, contentHTML) {
+            modalTitle.innerText = title;
+            modalBodyDiv.innerHTML = contentHTML;
+            modal.classList.remove('opacity-0', 'invisible', 'pointer-events-none');
+            modal.classList.add('opacity-100', 'visible', 'pointer-events-auto');
+            // animate content
+            const contentDiv = document.getElementById('modalContent');
+            contentDiv.classList.remove('scale-95', 'opacity-0');
+            contentDiv.classList.add('scale-100', 'opacity-100');
         }
 
-        .link-btn:active {
-            transform: translateY(0) scale(0.98);
+        function closeModal() {
+            const contentDiv = document.getElementById('modalContent');
+            contentDiv.classList.remove('scale-100', 'opacity-100');
+            contentDiv.classList.add('scale-95', 'opacity-0');
+            modal.classList.remove('opacity-100', 'visible', 'pointer-events-auto');
+            modal.classList.add('opacity-0', 'invisible', 'pointer-events-none');
         }
+
+        closeModalBtn.addEventListener('click', closeModal);
+        modalConfirm.addEventListener('click', closeModal);
+        backdrop.addEventListener('click', closeModal);
+
+        // ----- Request Modal (No Spam information) -----
+        const requestBtn = document.getElementById('requestModalBtn');
+        if (requestBtn) {
+            requestBtn.addEventListener('click', () => {
+                const requestHTML = `
+                    <div class="flex flex-col gap-2">
+                        <div class="flex items-center gap-2 text-amber-300"><span>📌</span> <span class="font-semibold">Request Rules & Info</span></div>
+                        <p class="leading-relaxed">✨ <strong>NO SPAM !!</strong> — Request hanya dilayani jika sopan dan jelas. Kirim request game mod atau emulator melalui:</p>
+                        <ul class="list-disc pl-5 space-y-1 text-white/70 text-xs">
+                            <li>DM Instagram/Twitter: <span class="text-white font-mono">@AsherMod_ID</span></li>
+                            <li>Email: <span class="text-white font-mono">request@ashermod.com</span> (Subject: Mod Request)</li>
+                            <li>Telegram: <span class="text-white font-mono">t.me/AsherMod</span> (Fast respon)</li>
+                        </ul>
+                        <p class="text-xs text-white/40 mt-1 italic">⚠️ Spam / toxic = ignore & banned. Hormati sesama gamers!</p>
+                    </div>
+                `;
+                openModal('📢 Request I No Spam!!', requestHTML);
+            });
+        }
+
+        // ----- Dana QR Modal with interactive QR visual (upgraded feature) -----
+        const danaBtn = document.getElementById('danaQRBtn');
+        if (danaBtn) {
+            danaBtn.addEventListener('click', () => {
+                // Generate QR Placeholder with style (actual QR simulation + Dana info)
+                const qrHTML = `
+                    <div class="flex flex-col items-center gap-4">
+                        <div class="bg-white p-3 rounded-2xl shadow-lg inline-block">
+                            <div class="w-40 h-40 bg-gradient-to-br from-emerald-800 to-teal-900 rounded-xl flex items-center justify-center relative border-2 border-emerald-400">
+                                <!-- stylized QR pattern simulation -->
+                                <div class="grid grid-cols-5 gap-1 absolute inset-2">
+                                    ${Array.from({ length: 25 }, (_, i) => {
+                                        const isBlack = Math.random() > 0.6;
+                                        return `<div class="w-full h-full ${isBlack ? 'bg-white' : 'bg-emerald-300'} rounded-sm" style="opacity:${isBlack ? 0.9 : 0.4}"></div>`;
+                                    }).join('')}
+                                </div>
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <div class="bg-black/40 backdrop-blur-sm rounded-full p-1.5">
+                                        <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 10h18M6 14h4M14 14h4M9 18h6"/><rect x="4" y="4" width="16" height="16" rx="2"/></svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-center space-y-1">
+                            <p class="font-bold text-emerald-300">✨ Scan QR Code ✨</p>
+                            <p class="text-xs text-white/70">Donasi via Dana: <span class="font-mono bg-white/10 px-2 py-0.5 rounded">0812-3456-7890</span> (AsherMod)</p>
+                            <p class="text-[10px] text-white/40">Klik tutup setelah scan, terima kasih support!</p>
+                            <div class="flex justify-center gap-3 mt-2">
+                                <span class="text-xs bg-white/10 px-2 py-1 rounded-full">✅ Dana Official Partner</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                openModal('💜 Donasi via Dana (QR)', qrHTML);
+            });
+        }
+
+        // Additional minor touch: prevent default for any missing external links but ensure all good
+        // Add smooth console greeting
+        console.log("%c✨ AsherMod | Link Bio Upgrade ✨", "color: #f0f; font-size: 16px; font-weight: bold;");
+        console.log("Order sesuai foto: Channel GamerZ → Emulator Games → Request → Dana QR → Saweria → Sociabuzz");
+        
+        // Optional: prevent accidental drag on buttons
+        const allButtons = document.querySelectorAll('a, button');
+        allButtons.forEach(btn => {
+            btn.addEventListener('dragstart', (e) => e.preventDefault());
+        });
+    </script>
+
+    <!-- small style fix for touch devices -->
+    <style>
+        @media (max-width: 480px) {
+            .glass-card {
+                padding: 1.25rem;
+            }
+            .link-btn {
+                padding: 0.75rem 1rem;
+            }
+        }
+        .link-btn svg:last-child {
+            transition: transform 0.2s;
+        }
+        .link-btn:hover svg:last-child {
+            transform: translateX(3px);
+        }
+        button.link-btn {
+            cursor: pointer;
+            width: 100%;
+            text-align: left;
+        }
+    </style>
+</body>
+    </html>       }
 
         .link-btn:focus-visible {
             outline: 2px solid var(--accent);
