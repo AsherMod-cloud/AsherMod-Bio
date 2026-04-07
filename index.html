@@ -685,8 +685,10 @@
         </div>
     </div>
 
-    <script>
-        // Initialize particles
+        <script>
+        // ==========================================
+        // 1. INISIALISASI PARTIKEL
+        // ==========================================
         function createParticles() {
             const container = document.getElementById('particles');
             if (!container) return;
@@ -705,62 +707,95 @@
             }
         }
 
-        // Share modal functionality
+        // ==========================================
+        // 2. FUNGSI MODAL (SHARE & DANA)
+        // ==========================================
+        
+        // Variabel Elemen Modal
         const shareBtn = document.getElementById('shareBtn');
         const shareModal = document.getElementById('shareModal');
         const modalClose = document.getElementById('modalClose');
+        const danaModal = document.getElementById('danaModal');
 
+        // --- Logika Modal Share ---
         if (shareBtn && shareModal && modalClose) {
+            // Buka modal share
             shareBtn.addEventListener('click', function() {
                 shareModal.classList.add('active');
             });
 
+            // Tombol tutup modal share
             modalClose.addEventListener('click', function() {
                 shareModal.classList.remove('active');
             });
 
+            // Klik area luar modal share
             shareModal.addEventListener('click', function(e) {
                 if (e.target === shareModal) {
                     shareModal.classList.remove('active');
                 }
             });
+        }
 
-            // Keyboard accessibility
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' && shareModal.classList.contains('active')) {
-                    shareModal.classList.remove('active');
+        // --- Logika Modal Dana ---
+        function openDanaModal() {
+            if(danaModal) danaModal.classList.add('active');
+        }
+
+        function closeDanaModal() {
+            if(danaModal) danaModal.classList.remove('active');
+        }
+
+        // Klik area luar modal dana
+        if(danaModal) {
+            danaModal.addEventListener('click', function(e) {
+                if (e.target === danaModal) {
+                    closeDanaModal();
                 }
             });
         }
 
-        // Copy link functionality
+        // ==========================================
+        // 3. FUNGSI COPY LINK
+        // ==========================================
         const copyBtn = document.querySelector('.modal-option[aria-label="Copy link"]');
         if (copyBtn) {
             copyBtn.addEventListener('click', function() {
                 navigator.clipboard.writeText(window.location.href).then(function() {
+                    // Visual feedback saat berhasil copy
                     const originalBg = copyBtn.style.background;
-                    copyBtn.style.background = 'rgba(59, 130, 246, 0.3)';
+                    copyBtn.style.background = 'rgba(34, 197, 94, 0.3)'; // Hijau success
                     setTimeout(function() {
                         copyBtn.style.background = originalBg;
-                    }, 500);
+                    }, 800);
+                }).catch(function(err) {
+                    console.error('Gagal copy: ', err);
                 });
             });
         }
 
-        // Link hover sound effect (subtle feedback)
-        const linkBtns = document.querySelectorAll('.link-btn, .donation-btn');
-        linkBtns.forEach(function(btn) {
-            btn.addEventListener('mouseenter', function() {
-                this.style.transition = 'all 0.15s cubic-bezier(0.4, 0, 0.2, 1)';
-            });
+        // ==========================================
+        // 4. TOMBOL ESCAPE KEYBOARD
+        // ==========================================
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                if (shareModal && shareModal.classList.contains('active')) {
+                    shareModal.classList.remove('active');
+                }
+                if (danaModal && danaModal.classList.contains('active')) {
+                    danaModal.classList.remove('active');
+                }
+            }
         });
 
-        // Initialize
+        // ==========================================
+        // 5. JALANKAN SAAT HALAMAN SIAP
+        // ==========================================
         document.addEventListener('DOMContentLoaded', function() {
             createParticles();
         });
 
-        // Intersection Observer for scroll animations
+        // Intersection Observer (animasi scroll)
         const observerOptions = {
             threshold: 0.1,
             rootMargin: '0px 0px -50px 0px'
@@ -778,25 +813,6 @@
         document.querySelectorAll('.link-item').forEach(function(item) {
             observer.observe(item);
         });
-        
-   const danaModal = document.getElementById('danaModal');
-
-        function openDanaModal() {
-            if(danaModal) danaModal.classList.add('active');
-        }
-
-        function closeDanaModal() {
-            if(danaModal) danaModal.classList.remove('active');
-        }
-
-        // Tutup modal kalau klik area luar (overlay)
-        if(danaModal) {
-            danaModal.addEventListener('click', function(e) {
-                if (e.target === danaModal) {
-                    closeDanaModal();
-                }
-            });
-        }
-    </script>
+        </script>
 </body>
 </html>
