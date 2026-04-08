@@ -3,6 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:type" content="website">
+<meta property="og:type" content="website">
+<meta property="og:title" content="AsherMod - Bio Link">
+<meta property="og:description" content="Game Mods & Emulator Sharing">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/AsherMod-cloud/AsherMod-Bio@main/profile.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:url" content="https://yourdomain.com">
+<meta property="og:site_name" content="AsherMod">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="AsherMod - Bio Link">
+<meta name="twitter:description" content="Game Mods & Emulator Sharing">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/AsherMod-cloud/AsherMod-Bio@main/profile.jpg">
     <title>AsherMod - Bio Link</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -776,6 +789,39 @@
                 });
             });
         }
+
+        // ==========================================
+// 3.5 FUNGSI SHARE SOSIAL
+// ==========================================
+
+// Ambil semua tombol share
+const waBtn = document.querySelector('.modal-option[aria-label="Share to WhatsApp"]');
+const tgBtn = document.querySelector('.modal-option[aria-label="Share to Telegram"]');
+const twBtn = document.querySelector('.modal-option[aria-label="Share to Twitter"]');
+
+const shareUrl = encodeURIComponent(window.location.href);
+const shareText = encodeURIComponent("Check this out 🔥");
+
+// WhatsApp
+if (waBtn) {
+    waBtn.addEventListener('click', function() {
+        window.open(`https://wa.me/?text=${shareText}%20${shareUrl}`, '_blank');
+    });
+}
+
+// Telegram
+if (tgBtn) {
+    tgBtn.addEventListener('click', function() {
+        window.open(`https://t.me/share/url?url=${shareUrl}&text=${shareText}`, '_blank');
+    });
+}
+
+// Twitter (X)
+if (twBtn) {
+    twBtn.addEventListener('click', function() {
+        window.open(`https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}`, '_blank');
+    });
+                                  } 
 
         // ==========================================
         // 4. TOMBOL ESCAPE KEYBOARD
