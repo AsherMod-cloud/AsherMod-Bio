@@ -767,57 +767,72 @@
             });
         }
 
+                // ==========================================
+        // 3. FUNGSI SHARE LOGIC (UPGRADED)
         // ==========================================
-        // 3. FUNGSI COPY LINK
-        // ==========================================
+        
+        // Konfigurasi
+        const pageUrl = window.location.href;
+        const pageTitle = document.title; // Ambil judul web lu "AsherMod - Bio Link"
+        const shareText = `Cek profil ${pageTitle} keren ini!`;
+        
+        const encodedUrl = encodeURIComponent(pageUrl);
+        const encodedText = encodeURIComponent(shareText);
+
+        // Helper: Tutup Modal Share
+        function closeShareModal() {
+            const modal = document.getElementById('shareModal');
+            if (modal) modal.classList.remove('active');
+        }
+
+        // --- 1. Copy Link ---
         const copyBtn = document.querySelector('.modal-option[aria-label="Copy link"]');
         if (copyBtn) {
             copyBtn.addEventListener('click', function() {
-                navigator.clipboard.writeText(window.location.href).then(function() {
-                    // Visual feedback saat berhasil copy
-                    const originalBg = copyBtn.style.background;
-                    copyBtn.style.background = 'rgba(34, 197, 94, 0.3)'; // Hijau success
+                navigator.clipboard.writeText(pageUrl).then(function() {
+                    // Visual feedback (Ijo = Sukses)
+                    copyBtn.style.background = 'rgba(34, 197, 94, 0.4)';
+                    
                     setTimeout(function() {
-                        copyBtn.style.background = originalBg;
+                        copyBtn.style.background = ''; // Reset warna
+                        closeShareModal(); // Auto close setelah 800ms
                     }, 800);
                 }).catch(function(err) {
                     console.error('Gagal copy: ', err);
+                    alert('Gagal copy link, coba manual ya.');
                 });
             });
         }
 
-        // ==========================================
-// 3.5 FUNGSI SHARE SOSIAL
-// ==========================================
+        // --- 2. WhatsApp ---
+        const waBtn = document.querySelector('.modal-option[aria-label="Share to WhatsApp"]');
+        if (waBtn) {
+            waBtn.addEventListener('click', function() {
+                // Format: text (pesan + link)
+                window.open(`https://wa.me/?text=${encodedText}%20${encodedUrl}`, '_blank');
+                closeShareModal();
+            });
+        }
 
-// Ambil semua tombol share
-const waBtn = document.querySelector('.modal-option[aria-label="Share to WhatsApp"]');
-const tgBtn = document.querySelector('.modal-option[aria-label="Share to Telegram"]');
-const twBtn = document.querySelector('.modal-option[aria-label="Share to Twitter"]');
+        // --- 3. Telegram ---
+        const tgBtn = document.querySelector('.modal-option[aria-label="Share to Telegram"]');
+        if (tgBtn) {
+            tgBtn.addEventListener('click', function() {
+                // Format: url & text
+                window.open(`https://t.me/share/url?url=${encodedUrl}&text=${encodedText}`, '_blank');
+                closeShareModal();
+            });
+        }
 
-const shareUrl = encodeURIComponent(window.location.href);
-const shareText = encodeURIComponent("Check this out 🔥");
-
-// WhatsApp
-if (waBtn) {
-    waBtn.addEventListener('click', function() {
-        window.open(`https://wa.me/?text=${shareText}%20${shareUrl}`, '_blank');
-    });
-}
-
-// Telegram
-if (tgBtn) {
-    tgBtn.addEventListener('click', function() {
-        window.open(`https://t.me/share/url?url=${shareUrl}&text=${shareText}`, '_blank');
-    });
-}
-
-// Twitter (X)
-if (twBtn) {
-    twBtn.addEventListener('click', function() {
-        window.open(`https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}`, '_blank');
-    });
-                                  } 
+        // --- 4. Twitter (X) ---
+        const twBtn = document.querySelector('.modal-option[aria-label="Share to Twitter"]');
+        if (twBtn) {
+            twBtn.addEventListener('click', function() {
+                // Format: text & url
+                window.open(`https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`, '_blank');
+                closeShareModal();
+            });
+            }
 
         // ==========================================
         // 4. TOMBOL ESCAPE KEYBOARD
