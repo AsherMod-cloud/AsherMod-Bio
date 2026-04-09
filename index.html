@@ -2,8 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta property="og:type" content="website">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"
     <meta property="og:type" content="website">
     <meta property="og:title" content="AsherMod - Bio Link">
     <meta property="og:description" content="Game Mods & Emulator Sharing">
@@ -819,7 +818,7 @@
         if (tgBtn) {
             tgBtn.addEventListener('click', function() {
                 // Format: url & text
-                window.open(`https://t.me/share/url?url=${encodedUrl}&text=${encodedText}`, '_blank');
+                window.open(`https://t.me/share/url?url=${encodedText}&text=${encodedUrl}`, '_blank');
                 closeShareModal();
             });
         }
