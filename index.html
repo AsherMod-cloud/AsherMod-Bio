@@ -689,14 +689,14 @@
                 copyBtn.addEventListener('click', function () {
                     navigator.clipboard.writeText(pageUrl).then(function () {
                         copyBtn.style.background = 'rgba(34,197,94,0.4)';
+                        showNotify('Link copied!');
                         setTimeout(function () {
                             copyBtn.style.background = '';
-                            showNotify('Link copied!');
                             closeInfoModal();
-                        }, 800);
+                        }, 500);
                     }).catch(function () {
-                        alert('Gagal copy link, coba manual ya.');
-                    });
+                          showNotify('Gagal copy, coba manual');
+                   });
                 });
             }
 
