@@ -26,24 +26,15 @@
         const root = document.documentElement;
         const ua = navigator.userAgent.toLowerCase();
         const isAndroid = ua.includes("android");
-
-        // WebView Android murni
         const isWebView = isAndroid && (ua.includes(" wv)") || ua.includes(";wv)") || ua.includes("wv "));
-
-        // 1DM — tangkap semua kemungkinan string UA-nya
         const is1DM = ua.includes("1dm") || ua.includes("1dmb") || ua.includes("idmbrowser");
-
         const lowMemory = navigator.deviceMemory && navigator.deviceMemory <= 2;
         const noBackdrop = !CSS.supports("backdrop-filter", "blur(5px)");
-
         if (isWebView || is1DM) root.classList.add("is-webview");
         if (lowMemory) root.classList.add("low-end");
         if (noBackdrop) root.classList.add("no-blur");
         if (is1DM) root.classList.add("is-1dm");
-
-        if (isWebView || is1DM || lowMemory) {
-            root.classList.add("lite-mode");
-        }
+        if (isWebView || is1DM || lowMemory) root.classList.add("lite-mode");
     })();
     </script>
 
@@ -137,29 +128,62 @@
             min-height: 100vh;
             display: flex; flex-direction: column; align-items: center;
             padding: 2rem 1rem;
-            /* isolation: isolate dihapus — fix stacking context di browser lama */
         }
-        
+
+        /* =====================
+           NOTIFY BOX
+        ===================== */
         .notify-box {
             position: fixed;
-            bottom: 20px;
+            bottom: 28px;
             left: 50%;
-            transform: translateX(-50%) translateY(20px);
-            background: rgba(20, 20, 30, 0.95);
-            color: #fff;
-            padding: 0.6rem 1rem;
-            border-radius: 8px;
-            font-size: 0.85rem;
+            transform: translateX(-50%) translateY(10px);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.55rem 1rem 0.55rem 0.7rem;
+            border-radius: 999px;
+            font-size: 0.82rem;
+            font-weight: 500;
+            letter-spacing: 0.01em;
             opacity: 0;
             pointer-events: none;
-            transition: all 0.3s ease;
-            z-index: 9999;
-            border: 1px solid rgba(255,255,255,0.1);
+            transition: opacity 0.22s ease, transform 0.22s ease;
+            z-index: 2147483647;
+            white-space: nowrap;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
         }
 
         .notify-box.show {
-             opacity: 1;
-             transform: translateX(-50%) translateY(0);
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* hijau — sukses */
+        .notify-box.notify-success {
+            background: #0a1f12;
+            border: 1px solid rgba(74,222,128,0.3);
+            color: #86efac;
+        }
+
+        /* merah — gagal */
+        .notify-box.notify-error {
+            background: #1f0a0a;
+            border: 1px solid rgba(248,113,113,0.3);
+            color: #fca5a5;
+        }
+
+        /* biru — info */
+        .notify-box.notify-info {
+            background: #0a1020;
+            border: 1px solid rgba(96,165,250,0.3);
+            color: #93c5fd;
+        }
+
+        .notify-icon {
+            width: 14px; height: 14px;
+            flex-shrink: 0;
+            stroke-width: 2.5;
         }
 
         /* Nav button — pojok kiri atas */
@@ -168,14 +192,13 @@
             top: 0; left: 0;
             width: 0; height: 0;
             overflow: visible;
-            z-index: 2147483647; /* nilai max integer z-index */
+            z-index: 2147483647;
             pointer-events: none;
         }
 
         .top-btn {
             position: absolute;
-            top: 1.25rem;
-            left: 1.25rem;
+            top: 1.25rem; left: 1.25rem;
             pointer-events: auto;
             display: -webkit-inline-flex;
             display: inline-flex;
@@ -191,20 +214,13 @@
             font-size: 0.82rem;
             font-weight: 500;
             cursor: pointer;
-            /* Tidak pakai transform atau will-change sama sekali */
             text-decoration: none;
             white-space: nowrap;
-            /* Satu-satunya property yang butuh support luas */
             box-shadow: 0 2px 8px rgba(0,0,0,0.4);
         }
 
-        .top-btn:active {
-            background: #222240;
-        }
-
-        .top-btn svg {
-            flex-shrink: 0;
-        }
+        .top-btn:active { background: #222240; }
+        .top-btn svg { flex-shrink: 0; }
 
         .profile-section {
             display: flex; flex-direction: column; align-items: center;
@@ -330,8 +346,8 @@
             font-weight: 700; font-size: 0.7rem;
         }
 
-        .dana-icon     { background: linear-gradient(135deg, #108ee9, #0066b3); }
-        .saweria-icon  { background: linear-gradient(135deg, #6ae0ac, #2fb26a); }
+        .dana-icon      { background: linear-gradient(135deg, #108ee9, #0066b3); }
+        .saweria-icon   { background: linear-gradient(135deg, #6ae0ac, #2fb26a); }
         .sociabuzz-icon { background: linear-gradient(135deg, #f59e0b, #d97706); }
 
         .footer {
@@ -354,7 +370,6 @@
 
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
 
-        /* FIX #6: Pastikan .modal-content tampil dengan benar di semua modal */
         .modal-content {
             background: #12121a;
             border: 1px solid var(--border);
@@ -390,44 +405,32 @@
 
         .modal-close:hover { background: rgba(255,255,255,0.1); }
 
-        /* ============================================================
-           LITE MODE — hanya matikan efek dekoratif berat
-           JANGAN sentuh top-btn, modal, link-btn, donation-btn
-           ============================================================ */
+        /* LITE MODE */
         html.lite-mode .smoke-container,
         html.lite-mode .particle { display: none !important; }
 
         html.lite-mode .noise-overlay { opacity: 0.02; }
 
-        /* Hanya animasi dekoratif yang dimatikan */
         html.lite-mode .smoke-layer,
         html.lite-mode .avatar-ring,
         html.lite-mode .avatar-glow,
-        html.lite-mode .particle {
-            animation: none !important;
-        }
+        html.lite-mode .particle { animation: none !important; }
 
-        /* top-btn di lite-mode */
         html.lite-mode .top-btn {
             background: #1a1a2e !important;
             border-color: rgba(255,255,255,0.2) !important;
         }
 
-        /* Modal — hapus backdrop-filter, ganti background solid */
         html.lite-mode .modal-overlay {
             backdrop-filter: none !important;
             -webkit-backdrop-filter: none !important;
             background: rgba(0,0,0,0.92) !important;
         }
 
-        /* Elemen yang butuh animasi fadeIn tetap pakai JS observer */
         html.lite-mode .profile-section,
         html.lite-mode .link-item,
         html.lite-mode .donation-btn,
-        html.lite-mode .footer {
-            animation: none !important;
-            /* opacity dihandle JS observer */
-        }
+        html.lite-mode .footer { animation: none !important; }
 
         body.modal-open .smoke-layer,
         body.modal-open .particle { animation: none !important; }
@@ -448,8 +451,15 @@
     </style>
 </head>
 <body>
-    <div id="notifyBox" class="notify-box">Link copied!</div>
-    
+
+    <!-- Notify Box -->
+    <div id="notifyBox" class="notify-box" role="status" aria-live="polite">
+        <svg id="notifyIcon" class="notify-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        <span id="notifyText"></span>
+    </div>
+
     <div class="smoke-container">
         <div class="smoke-layer"></div>
         <div class="smoke-layer"></div>
@@ -459,7 +469,7 @@
     <div class="noise-overlay"></div>
     <div id="particles"></div>
 
-    <!-- Nav wrapper: elemen fixed yang berdiri sendiri, di luar semua stacking context -->
+    <!-- Nav wrapper -->
     <div class="top-wrapper" id="topWrapper">
         <button class="top-btn" id="topBtn" aria-label="Info profile">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -534,13 +544,12 @@
         </section>
 
         <footer class="footer">
-            <p class="footer-url">Powered by AsherMod</p>
+            <p class="footer-url"><i>Powered by AsherMod</i></p>
         </footer>
     </main>
 
     <!-- Modal Dana QR -->
     <div class="modal-overlay" id="danaModal">
-        <!-- FIX #6: Tambahkan class modal-content agar animasi CSS berlaku -->
         <div class="modal-content" style="text-align: center;">
             <h2 class="modal-title font-display">Scan Dana QR</h2>
             <img src="/assets/QR_DANA.png" alt="Dana QR Code" style="width: 100%; max-width: 250px; border-radius: 12px; margin: 0 auto 1rem; display: block;">
@@ -584,25 +593,48 @@
 
     <script>
     (function () {
-        // ==========================================
-        // SEMUA kode dijalankan di dalam DOMContentLoaded
-        // agar DOM pasti sudah siap — fix race condition di 1DM/WebView
-        // ==========================================
         function init() {
-        
-            function showNotify(text) {
-                var box = document.getElementById('notifyBox');
-                if (!box) return;
 
-                box.textContent = text;
-                box.classList.add('show');
+            // ==========================================
+            // NOTIFY BOX
+            // ==========================================
+            var notifyTimer = null;
 
-                setTimeout(function () {
-                box.classList.remove('show');
-                }, 1500);
+            var notifyIcons = {
+                success: '<polyline points="20 6 9 17 4 12"></polyline>',
+                error:   '<line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>',
+                info:    '<circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>'
+            };
+
+            function showNotify(text, type) {
+                var box  = document.getElementById('notifyBox');
+                var txt  = document.getElementById('notifyText');
+                var icon = document.getElementById('notifyIcon');
+                if (!box || !txt || !icon) return;
+
+                type = type || 'success';
+
+                box.classList.remove('notify-success', 'notify-error', 'notify-info', 'show');
+                void box.offsetWidth; // force reflow agar transition reset
+
+                txt.textContent = text;
+                icon.innerHTML  = notifyIcons[type] || notifyIcons.success;
+                box.classList.add('notify-' + type);
+
+                requestAnimationFrame(function () {
+                    box.classList.add('show');
+                });
+
+                if (notifyTimer) clearTimeout(notifyTimer);
+                notifyTimer = setTimeout(function () {
+                    box.classList.remove('show');
+                    notifyTimer = null;
+                }, 2200);
             }
 
-            // --- 1. PARTIKEL ---
+            // ==========================================
+            // PARTIKEL
+            // ==========================================
             function createParticles() {
                 var container = document.getElementById('particles');
                 if (!container) return;
@@ -619,13 +651,14 @@
                 }
             }
 
-            // --- 2. TOP BTN — pastikan selalu visible dulu, baru pasang listener ---
-            var topBtn   = document.getElementById('topBtn');
-            var infoModal = document.getElementById('infoModal');
+            // ==========================================
+            // TOMBOL & MODAL
+            // ==========================================
+            var topBtn     = document.getElementById('topBtn');
+            var infoModal  = document.getElementById('infoModal');
             var modalClose = document.getElementById('modalClose');
             var danaModal  = document.getElementById('danaModal');
 
-            // PAKSA top-btn visible sejak awal, tidak bergantung CSS/observer
             if (topBtn) {
                 topBtn.style.opacity    = '1';
                 topBtn.style.visibility = 'visible';
@@ -649,9 +682,7 @@
             }
 
             if (modalClose) {
-                modalClose.addEventListener('click', function () {
-                    closeInfoModal();
-                });
+                modalClose.addEventListener('click', closeInfoModal);
             }
 
             if (infoModal) {
@@ -660,14 +691,12 @@
                 });
             }
 
-            // --- 3. MODAL DANA ---
             function openDanaModal() {
                 if (danaModal) { danaModal.classList.add('active'); toggleBodyScroll(true); }
             }
             function closeDanaModal() {
                 if (danaModal) { danaModal.classList.remove('active'); toggleBodyScroll(false); }
             }
-            // expose ke global agar onclick di HTML bisa memanggil
             window.openDanaModal  = openDanaModal;
             window.closeDanaModal = closeDanaModal;
 
@@ -677,7 +706,9 @@
                 });
             }
 
-            // --- 4. KIRIM LOGIC ---
+            // ==========================================
+            // KIRIM LOGIC
+            // ==========================================
             var pageUrl     = window.location.href;
             var pageTitle   = document.title;
             var kirimText   = 'Cek profil ' + pageTitle + ' keren ini!';
@@ -688,15 +719,16 @@
             if (copyBtn) {
                 copyBtn.addEventListener('click', function () {
                     navigator.clipboard.writeText(pageUrl).then(function () {
-                        copyBtn.style.background = 'rgba(34,197,94,0.4)';
-                        showNotify('Link copied!');
+                        copyBtn.style.background = 'rgba(34,197,94,0.25)';
                         setTimeout(function () {
                             copyBtn.style.background = '';
                             closeInfoModal();
+                            showNotify('Link berhasil disalin!', 'success');
                         }, 500);
                     }).catch(function () {
-                          showNotify('Gagal copy, coba manual');
-                   });
+                        closeInfoModal();
+                        showNotify('Gagal menyalin link', 'error');
+                    });
                 });
             }
 
@@ -705,6 +737,7 @@
                 waBtn.addEventListener('click', function () {
                     window.open('https://wa.me/?text=' + encodedText + '%20' + encodedUrl, '_blank');
                     closeInfoModal();
+                    showNotify('Membuka WhatsApp...', 'info');
                 });
             }
 
@@ -713,6 +746,7 @@
                 tgBtn.addEventListener('click', function () {
                     window.open('https://t.me/share/url?url=' + encodedUrl + '&text=' + encodedText, '_blank');
                     closeInfoModal();
+                    showNotify('Membuka Telegram...', 'info');
                 });
             }
 
@@ -721,10 +755,13 @@
                 twBtn.addEventListener('click', function () {
                     window.open('https://twitter.com/intent/tweet?text=' + encodedText + '&url=' + encodedUrl, '_blank');
                     closeInfoModal();
+                    showNotify('Membuka Twitter...', 'info');
                 });
             }
 
-            // --- 5. ESCAPE KEY ---
+            // ==========================================
+            // ESCAPE KEY
+            // ==========================================
             document.addEventListener('keydown', function (e) {
                 if (e.key === 'Escape') {
                     closeInfoModal();
@@ -732,22 +769,22 @@
                 }
             });
 
-            // --- 6. INTERSECTION OBSERVER untuk elemen konten (BUKAN top-btn) ---
-            // top-btn TIDAK diobserve — sudah di-set visible manual di atas
-            var observerElements = [];
+            // ==========================================
+            // INTERSECTION OBSERVER
+            // ==========================================
+            var toObserve = [];
             var profileSection = document.querySelector('.profile-section');
             var footer         = document.querySelector('.footer');
 
-            if (profileSection) observerElements.push(profileSection);
-            if (footer) observerElements.push(footer);
-            document.querySelectorAll('.link-item').forEach(function (el) { observerElements.push(el); });
-            document.querySelectorAll('.donation-btn').forEach(function (el) { observerElements.push(el); });
+            if (profileSection) toObserve.push(profileSection);
+            if (footer) toObserve.push(footer);
+            document.querySelectorAll('.link-item').forEach(function (el) { toObserve.push(el); });
+            document.querySelectorAll('.donation-btn').forEach(function (el) { toObserve.push(el); });
 
-            if (observerElements.length > 0 && 'IntersectionObserver' in window) {
+            if (toObserve.length > 0 && 'IntersectionObserver' in window) {
                 var observer = new IntersectionObserver(function (entries) {
                     entries.forEach(function (entry) {
                         if (entry.isIntersecting) {
-                            // Jangan override top-btn yang sudah di-set manual
                             if (entry.target.id === 'topBtn') return;
                             entry.target.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
                             entry.target.style.opacity    = '1';
@@ -757,28 +794,24 @@
                     });
                 }, { threshold: 0.05, rootMargin: '0px 0px -10px 0px' });
 
-                observerElements.forEach(function (el) { observer.observe(el); });
+                toObserve.forEach(function (el) { observer.observe(el); });
             } else {
-                // Fallback kalau IntersectionObserver tidak support
-                observerElements.forEach(function (el) {
+                toObserve.forEach(function (el) {
                     el.style.opacity   = '1';
                     el.style.transform = 'translateY(0)';
                 });
             }
 
-            // --- 7. PARTIKEL ---
             createParticles();
         }
 
-        // Jalankan init() — dengan guard DOMContentLoaded
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', init);
         } else {
-            // DOM sudah ready (script defer / taruh di bawah body)
             init();
         }
 
     })();
     </script>
 </body>
-        </html>
+</html>
