@@ -27,14 +27,23 @@
         const root = document.documentElement;
         const ua = navigator.userAgent.toLowerCase();
         const isAndroid = ua.includes("android");
-        const isWebView = ua.includes("wv") || (ua.includes("version/") && isAndroid);
-        const is1DM = ua.includes("1dm") || ua.includes("idm");
+
+        // Deteksi WebView Android (bukan browser utama)
+        const isWebView = isAndroid && (ua.includes(" wv)") || ua.includes(";wv)"));
+
+        // Deteksi 1DM/IDM lebih ketat: harus ada "1dmb" atau "idmbrowser"
+        // menghindari false-positive pada browser biasa yang kebetulan ada "idm" di UA
+        const is1DM = ua.includes("1dmb") || ua.includes("idmbrowser");
+
         const lowMemory = navigator.deviceMemory && navigator.deviceMemory <= 2;
         const noBackdrop = !CSS.supports("backdrop-filter", "blur(5px)");
+
         if (isWebView || is1DM) root.classList.add("is-webview");
         if (lowMemory) root.classList.add("low-end");
         if (noBackdrop) root.classList.add("no-blur");
-        if (isWebView || is1DM || lowMemory || noBackdrop) {
+
+        // Lite mode hanya kalau benar-benar perangkat bermasalah
+        if (isWebView || is1DM || lowMemory) {
             root.classList.add("lite-mode");
         }
     })();
@@ -330,7 +339,7 @@
 
         .modal-close:hover { background: rgba(255,255,255,0.1); }
 
-        /* FIX #4: Lite mode CSS dipindah ke dalam <style>, bukan di dalam <script> */
+        /* Lite mode — matikan efek berat, jangan sentuh elemen UI */
         html.lite-mode .smoke-container,
         html.lite-mode .particle { display: none !important; }
 
@@ -340,6 +349,8 @@
             backdrop-filter: none !important;
             -webkit-backdrop-filter: none !important;
             background: rgba(20,20,30,0.95);
+            opacity: 1 !important;
+            animation: none !important;
         }
 
         html.lite-mode .modal-overlay {
@@ -348,7 +359,14 @@
             background: rgba(0,0,0,0.9);
         }
 
-        html.lite-mode * { animation: none !important; transition: opacity 0.2s ease !important; }
+        /* Hanya matikan animasi dekoratif, BUKAN elemen UI */
+        html.lite-mode .smoke-layer,
+        html.lite-mode .avatar-ring,
+        html.lite-mode .avatar-glow { animation: none !important; }
+
+        /* Modal tetap bisa transition */
+        html.lite-mode .modal-overlay,
+        html.lite-mode .modal-content { transition: opacity 0.2s ease, transform 0.2s ease !important; }
 
         body.modal-open .smoke-layer,
         body.modal-open .particle { animation: none !important; }
@@ -646,6 +664,21 @@
         // ==========================================
         document.addEventListener('DOMContentLoaded', function () {
             createParticles();
+
+            // Safety fallback: pastikan elemen UI penting selalu visible
+            // terlepas dari animasi CSS yang mungkin tidak jalan (lite-mode, dll)
+            const alwaysVisible = [
+                document.querySelector('.share-btn'),
+                document.querySelector('.profile-section'),
+                document.querySelector('.donation-section'),
+                document.querySelector('.footer'),
+            ];
+            alwaysVisible.forEach(function(el) {
+                if (el) {
+                    el.style.opacity = '1';
+                    el.style.transform = 'translateY(0)';
+                }
+            });
         });
 
         // Intersection Observer — observe semua elemen animasi sekaligus
