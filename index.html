@@ -21,19 +21,17 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
-    <!-- FIX #1: Script deteksi device dipindah ke dalam <head> -->
     <script>
     (function () {
         const root = document.documentElement;
         const ua = navigator.userAgent.toLowerCase();
         const isAndroid = ua.includes("android");
 
-        // Deteksi WebView Android (bukan browser utama)
-        const isWebView = isAndroid && (ua.includes(" wv)") || ua.includes(";wv)"));
+        // WebView Android murni
+        const isWebView = isAndroid && (ua.includes(" wv)") || ua.includes(";wv)") || ua.includes("wv "));
 
-        // Deteksi 1DM/IDM lebih ketat: harus ada "1dmb" atau "idmbrowser"
-        // menghindari false-positive pada browser biasa yang kebetulan ada "idm" di UA
-        const is1DM = ua.includes("1dmb") || ua.includes("idmbrowser");
+        // 1DM — tangkap semua kemungkinan string UA-nya
+        const is1DM = ua.includes("1dm") || ua.includes("1dmb") || ua.includes("idmbrowser");
 
         const lowMemory = navigator.deviceMemory && navigator.deviceMemory <= 2;
         const noBackdrop = !CSS.supports("backdrop-filter", "blur(5px)");
@@ -41,8 +39,8 @@
         if (isWebView || is1DM) root.classList.add("is-webview");
         if (lowMemory) root.classList.add("low-end");
         if (noBackdrop) root.classList.add("no-blur");
+        if (is1DM) root.classList.add("is-1dm");
 
-        // Lite mode hanya kalau benar-benar perangkat bermasalah
         if (isWebView || is1DM || lowMemory) {
             root.classList.add("lite-mode");
         }
@@ -135,21 +133,27 @@
         }
 
         .main-content {
-            position: relative; z-index: 10;
+            position: relative;
             min-height: 100vh;
             display: flex; flex-direction: column; align-items: center;
             padding: 2rem 1rem;
-            isolation: isolate;
+            /* isolation: isolate dihapus — bikin stacking context baru yg mengubur share-btn di browser lama */
         }
 
         .share-btn {
             position: fixed; top: 1.5rem; right: 1.5rem;
             width: 44px; height: 44px; border-radius: 50%;
-            background: var(--card); border: 1px solid var(--border);
+            background: rgba(20, 20, 35, 0.9);
+            border: 1px solid rgba(255,255,255,0.15);
             display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: all 0.3s ease;
-            z-index: 20;
+            cursor: pointer; transition: background 0.3s ease, transform 0.2s ease;
+            /* z-index sangat tinggi agar tidak tertimpa stacking context apapun */
+            z-index: 9999;
             color: var(--fg);
+            /* Paksa buat layer sendiri — hindari rendering bug di WebView/1DM */
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+            will-change: auto;
         }
 
         .share-btn:hover { background: rgba(59,130,246,0.2); border-color: var(--accent); transform: scale(1.1); }
@@ -339,34 +343,46 @@
 
         .modal-close:hover { background: rgba(255,255,255,0.1); }
 
-        /* Lite mode — matikan efek berat, jangan sentuh elemen UI */
+        /* ============================================================
+           LITE MODE — hanya matikan efek dekoratif berat
+           JANGAN sentuh share-btn, modal, link-btn, donation-btn
+           ============================================================ */
         html.lite-mode .smoke-container,
         html.lite-mode .particle { display: none !important; }
 
         html.lite-mode .noise-overlay { opacity: 0.02; }
 
-        html.lite-mode .share-btn {
-            backdrop-filter: none !important;
-            -webkit-backdrop-filter: none !important;
-            background: rgba(20,20,30,0.95);
-            opacity: 1 !important;
+        /* Hanya animasi dekoratif yang dimatikan */
+        html.lite-mode .smoke-layer,
+        html.lite-mode .avatar-ring,
+        html.lite-mode .avatar-glow,
+        html.lite-mode .particle {
             animation: none !important;
         }
 
+        /* share-btn di lite-mode: pastikan selalu visible & di atas segalanya */
+        html.lite-mode .share-btn {
+            opacity: 1 !important;
+            visibility: visible !important;
+            background: rgba(20, 20, 35, 0.95) !important;
+            border-color: rgba(255,255,255,0.2) !important;
+        }
+
+        /* Modal — hapus backdrop-filter, ganti background solid */
         html.lite-mode .modal-overlay {
             backdrop-filter: none !important;
             -webkit-backdrop-filter: none !important;
-            background: rgba(0,0,0,0.9);
+            background: rgba(0,0,0,0.92) !important;
         }
 
-        /* Hanya matikan animasi dekoratif, BUKAN elemen UI */
-        html.lite-mode .smoke-layer,
-        html.lite-mode .avatar-ring,
-        html.lite-mode .avatar-glow { animation: none !important; }
-
-        /* Modal tetap bisa transition */
-        html.lite-mode .modal-overlay,
-        html.lite-mode .modal-content { transition: opacity 0.2s ease, transform 0.2s ease !important; }
+        /* Elemen yang butuh animasi fadeIn tetap pakai JS observer */
+        html.lite-mode .profile-section,
+        html.lite-mode .link-item,
+        html.lite-mode .donation-btn,
+        html.lite-mode .footer {
+            animation: none !important;
+            /* opacity dihandle JS observer */
+        }
 
         body.modal-open .smoke-layer,
         body.modal-open .particle { animation: none !important; }
