@@ -532,200 +532,189 @@
     </div>
 
     <script>
+    (function () {
         // ==========================================
-        // 1. PARTIKEL
+        // SEMUA kode dijalankan di dalam DOMContentLoaded
+        // agar DOM pasti sudah siap — fix race condition di 1DM/WebView
         // ==========================================
-        function createParticles() {
-            const container = document.getElementById('particles');
-            if (!container) return;
-            for (let i = 0; i < 15; i++) {
-                const p = document.createElement('div');
-                p.className = 'particle';
-                p.style.left = Math.random() * 100 + '%';
-                p.style.animationDelay = Math.random() * 15 + 's';
-                p.style.animationDuration = (10 + Math.random() * 10) + 's';
-                const size = (2 + Math.random() * 3) + 'px';
-                p.style.width = size;
-                p.style.height = size;
-                container.appendChild(p);
-            }
-        }
+        function init() {
 
-        // ==========================================
-        // 2. ELEMEN MODAL
-        // ==========================================
-        const shareBtn   = document.getElementById('shareBtn');
-        const shareModal = document.getElementById('shareModal');
-        const modalClose = document.getElementById('modalClose');
-        const danaModal  = document.getElementById('danaModal');
-
-        function toggleBodyScroll(isOpen) {
-            document.body.classList.toggle('modal-open', isOpen);
-        }
-
-        // --- Modal Share ---
-        // FIX #3: Event listener hanya didefinisikan SATU kali (hapus duplikat)
-        shareBtn.addEventListener('click', function () {
-            shareModal.classList.add('active');
-            toggleBodyScroll(true);
-        });
-
-        modalClose.addEventListener('click', function () {
-            shareModal.classList.remove('active');
-            toggleBodyScroll(false);
-        });
-
-        shareModal.addEventListener('click', function (e) {
-            if (e.target === shareModal) {
-                shareModal.classList.remove('active');
-                toggleBodyScroll(false);
-            }
-        });
-
-        // --- Modal Dana ---
-        function openDanaModal() {
-            if (danaModal) {
-                danaModal.classList.add('active');
-                toggleBodyScroll(true);
-            }
-        }
-
-        function closeDanaModal() {
-            if (danaModal) {
-                danaModal.classList.remove('active');
-                toggleBodyScroll(false);
-            }
-        }
-
-        if (danaModal) {
-            danaModal.addEventListener('click', function (e) {
-                if (e.target === danaModal) closeDanaModal();
-            });
-        }
-
-        // ==========================================
-        // 3. SHARE LOGIC
-        // ==========================================
-        const pageUrl     = window.location.href;
-        const pageTitle   = document.title;
-        const shareText   = 'Cek profil ' + pageTitle + ' keren ini!';
-        const encodedUrl  = encodeURIComponent(pageUrl);
-        const encodedText = encodeURIComponent(shareText);
-
-        function closeShareModal() {
-            shareModal.classList.remove('active');
-            toggleBodyScroll(false);
-        }
-
-        // Copy Link
-        const copyBtn = document.querySelector('.modal-option[aria-label="Copy link"]');
-        if (copyBtn) {
-            copyBtn.addEventListener('click', function () {
-                navigator.clipboard.writeText(pageUrl).then(function () {
-                    copyBtn.style.background = 'rgba(34,197,94,0.4)';
-                    setTimeout(function () {
-                        copyBtn.style.background = '';
-                        closeShareModal();
-                    }, 800);
-                }).catch(function () {
-                    alert('Gagal copy link, coba manual ya.');
-                });
-            });
-        }
-
-        // WhatsApp
-        const waBtn = document.querySelector('.modal-option[aria-label="Share to WhatsApp"]');
-        if (waBtn) {
-            waBtn.addEventListener('click', function () {
-                window.open('https://wa.me/?text=' + encodedText + '%20' + encodedUrl, '_blank');
-                closeShareModal();
-            });
-        }
-
-        // FIX #5: Parameter Telegram URL diperbaiki (url=link, text=pesan)
-        const tgBtn = document.querySelector('.modal-option[aria-label="Share to Telegram"]');
-        if (tgBtn) {
-            tgBtn.addEventListener('click', function () {
-                window.open('https://t.me/share/url?url=' + encodedUrl + '&text=' + encodedText, '_blank');
-                closeShareModal();
-            });
-        }
-
-        // Twitter / X
-        const twBtn = document.querySelector('.modal-option[aria-label="Share to Twitter"]');
-        if (twBtn) {
-            twBtn.addEventListener('click', function () {
-                window.open('https://twitter.com/intent/tweet?text=' + encodedText + '&url=' + encodedUrl, '_blank');
-                closeShareModal();
-            });
-        }
-
-        // ==========================================
-        // 4. ESCAPE KEY
-        // ==========================================
-        document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape') {
-                if (shareModal && shareModal.classList.contains('active')) {
-                    shareModal.classList.remove('active');
-                    toggleBodyScroll(false);
+            // --- 1. PARTIKEL ---
+            function createParticles() {
+                var container = document.getElementById('particles');
+                if (!container) return;
+                for (var i = 0; i < 15; i++) {
+                    var p = document.createElement('div');
+                    p.className = 'particle';
+                    p.style.left = (Math.random() * 100) + '%';
+                    p.style.animationDelay = (Math.random() * 15) + 's';
+                    p.style.animationDuration = (10 + Math.random() * 10) + 's';
+                    var size = (2 + Math.random() * 3) + 'px';
+                    p.style.width = size;
+                    p.style.height = size;
+                    container.appendChild(p);
                 }
-                if (danaModal && danaModal.classList.contains('active')) {
+            }
+
+            // --- 2. SHARE BTN — pastikan selalu visible dulu, baru pasang listener ---
+            var shareBtn   = document.getElementById('shareBtn');
+            var shareModal = document.getElementById('shareModal');
+            var modalClose = document.getElementById('modalClose');
+            var danaModal  = document.getElementById('danaModal');
+
+            // PAKSA share-btn visible sejak awal, tidak bergantung CSS/observer
+            if (shareBtn) {
+                shareBtn.style.opacity    = '1';
+                shareBtn.style.visibility = 'visible';
+                shareBtn.style.display    = 'flex';
+            }
+
+            function toggleBodyScroll(isOpen) {
+                document.body.classList.toggle('modal-open', isOpen);
+            }
+
+            function closeShareModal() {
+                if (shareModal) shareModal.classList.remove('active');
+                toggleBodyScroll(false);
+            }
+
+            if (shareBtn && shareModal) {
+                shareBtn.addEventListener('click', function () {
+                    shareModal.classList.add('active');
+                    toggleBodyScroll(true);
+                });
+            }
+
+            if (modalClose) {
+                modalClose.addEventListener('click', function () {
+                    closeShareModal();
+                });
+            }
+
+            if (shareModal) {
+                shareModal.addEventListener('click', function (e) {
+                    if (e.target === shareModal) closeShareModal();
+                });
+            }
+
+            // --- 3. MODAL DANA ---
+            function openDanaModal() {
+                if (danaModal) { danaModal.classList.add('active'); toggleBodyScroll(true); }
+            }
+            function closeDanaModal() {
+                if (danaModal) { danaModal.classList.remove('active'); toggleBodyScroll(false); }
+            }
+            // expose ke global agar onclick di HTML bisa memanggil
+            window.openDanaModal  = openDanaModal;
+            window.closeDanaModal = closeDanaModal;
+
+            if (danaModal) {
+                danaModal.addEventListener('click', function (e) {
+                    if (e.target === danaModal) closeDanaModal();
+                });
+            }
+
+            // --- 4. SHARE LOGIC ---
+            var pageUrl     = window.location.href;
+            var pageTitle   = document.title;
+            var shareText   = 'Cek profil ' + pageTitle + ' keren ini!';
+            var encodedUrl  = encodeURIComponent(pageUrl);
+            var encodedText = encodeURIComponent(shareText);
+
+            var copyBtn = document.querySelector('.modal-option[aria-label="Copy link"]');
+            if (copyBtn) {
+                copyBtn.addEventListener('click', function () {
+                    navigator.clipboard.writeText(pageUrl).then(function () {
+                        copyBtn.style.background = 'rgba(34,197,94,0.4)';
+                        setTimeout(function () {
+                            copyBtn.style.background = '';
+                            closeShareModal();
+                        }, 800);
+                    }).catch(function () {
+                        alert('Gagal copy link, coba manual ya.');
+                    });
+                });
+            }
+
+            var waBtn = document.querySelector('.modal-option[aria-label="Share to WhatsApp"]');
+            if (waBtn) {
+                waBtn.addEventListener('click', function () {
+                    window.open('https://wa.me/?text=' + encodedText + '%20' + encodedUrl, '_blank');
+                    closeShareModal();
+                });
+            }
+
+            var tgBtn = document.querySelector('.modal-option[aria-label="Share to Telegram"]');
+            if (tgBtn) {
+                tgBtn.addEventListener('click', function () {
+                    window.open('https://t.me/share/url?url=' + encodedUrl + '&text=' + encodedText, '_blank');
+                    closeShareModal();
+                });
+            }
+
+            var twBtn = document.querySelector('.modal-option[aria-label="Share to Twitter"]');
+            if (twBtn) {
+                twBtn.addEventListener('click', function () {
+                    window.open('https://twitter.com/intent/tweet?text=' + encodedText + '&url=' + encodedUrl, '_blank');
+                    closeShareModal();
+                });
+            }
+
+            // --- 5. ESCAPE KEY ---
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') {
+                    closeShareModal();
                     closeDanaModal();
                 }
-            }
-        });
+            });
 
-        // ==========================================
-        // 5. INISIALISASI
-        // ==========================================
-        document.addEventListener('DOMContentLoaded', function () {
-            createParticles();
+            // --- 6. INTERSECTION OBSERVER untuk elemen konten (BUKAN share-btn) ---
+            // Share-btn TIDAK diobserve — sudah di-set visible manual di atas
+            var observerElements = [];
+            var profileSection = document.querySelector('.profile-section');
+            var footer         = document.querySelector('.footer');
 
-            // Safety fallback: pastikan elemen UI penting selalu visible
-            // terlepas dari animasi CSS yang mungkin tidak jalan (lite-mode, dll)
-            const alwaysVisible = [
-                document.querySelector('.share-btn'),
-                document.querySelector('.profile-section'),
-                document.querySelector('.donation-section'),
-                document.querySelector('.footer'),
-            ];
-            alwaysVisible.forEach(function(el) {
-                if (el) {
-                    el.style.opacity = '1';
+            if (profileSection) observerElements.push(profileSection);
+            if (footer) observerElements.push(footer);
+            document.querySelectorAll('.link-item').forEach(function (el) { observerElements.push(el); });
+            document.querySelectorAll('.donation-btn').forEach(function (el) { observerElements.push(el); });
+
+            if (observerElements.length > 0 && 'IntersectionObserver' in window) {
+                var observer = new IntersectionObserver(function (entries) {
+                    entries.forEach(function (entry) {
+                        if (entry.isIntersecting) {
+                            // Jangan override share-btn yang sudah di-set manual
+                            if (entry.target.id === 'shareBtn') return;
+                            entry.target.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                            entry.target.style.opacity    = '1';
+                            entry.target.style.transform  = 'translateY(0)';
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.05, rootMargin: '0px 0px -10px 0px' });
+
+                observerElements.forEach(function (el) { observer.observe(el); });
+            } else {
+                // Fallback kalau IntersectionObserver tidak support
+                observerElements.forEach(function (el) {
+                    el.style.opacity   = '1';
                     el.style.transform = 'translateY(0)';
-                }
-            });
-        });
+                });
+            }
 
-        // Intersection Observer — observe semua elemen animasi sekaligus
-        const observer = new IntersectionObserver(function (entries) {
-            entries.forEach(function (entry) {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                    entry.target.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-                    observer.unobserve(entry.target); // stop setelah muncul
-                }
-            });
-        }, { threshold: 0.05, rootMargin: '0px 0px -20px 0px' });
+            // --- 7. PARTIKEL ---
+            createParticles();
+        }
 
-        // Observe link-item
-        document.querySelectorAll('.link-item').forEach(function (item) {
-            observer.observe(item);
-        });
+        // Jalankan init() — dengan guard DOMContentLoaded
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            // DOM sudah ready (script defer / taruh di bawah body)
+            init();
+        }
 
-        // Observe profile-section
-        const profileSection = document.querySelector('.profile-section');
-        if (profileSection) observer.observe(profileSection);
-
-        // Observe donation-btn (inline style opacity:0 tidak dihandle CSS animation di lite-mode)
-        document.querySelectorAll('.donation-btn').forEach(function (btn) {
-            observer.observe(btn);
-        });
-
-        // Observe footer
-        const footer = document.querySelector('.footer');
-        if (footer) observer.observe(footer);
+    })();
     </script>
 </body>
 </html>
