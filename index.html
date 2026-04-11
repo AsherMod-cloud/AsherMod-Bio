@@ -139,6 +139,28 @@
             padding: 2rem 1rem;
             /* isolation: isolate dihapus — fix stacking context di browser lama */
         }
+        
+        .notify-box {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: rgba(20, 20, 30, 0.95);
+            color: #fff;
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            z-index: 9999;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .notify-box.show {
+             opacity: 1;
+             transform: translateX(-50%) translateY(0);
+        }
 
         /* Nav button — pojok kiri atas */
         .top-wrapper {
@@ -426,6 +448,8 @@
     </style>
 </head>
 <body>
+    <div id="notifyBox" class="notify-box">Link copied!</div>
+    
     <div class="smoke-container">
         <div class="smoke-layer"></div>
         <div class="smoke-layer"></div>
@@ -565,6 +589,18 @@
         // agar DOM pasti sudah siap — fix race condition di 1DM/WebView
         // ==========================================
         function init() {
+        
+            function showNotify(text) {
+                var box = document.getElementById('notifyBox');
+                if (!box) return;
+
+                box.textContent = text;
+                box.classList.add('show');
+
+                setTimeout(function () {
+                box.classList.remove('show');
+                }, 1500);
+            }
 
             // --- 1. PARTIKEL ---
             function createParticles() {
@@ -655,6 +691,7 @@
                         copyBtn.style.background = 'rgba(34,197,94,0.4)';
                         setTimeout(function () {
                             copyBtn.style.background = '';
+                            showNotify('Link copied!');
                             closeInfoModal();
                         }, 800);
                     }).catch(function () {
@@ -744,4 +781,4 @@
     })();
     </script>
 </body>
-</html>
+        </html>
