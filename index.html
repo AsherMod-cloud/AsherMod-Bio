@@ -140,24 +140,49 @@
             /* isolation: isolate dihapus — bikin stacking context baru yg mengubur share-btn di browser lama */
         }
 
-        .share-btn {
-            position: fixed; top: 1.5rem; right: 1.5rem;
-            width: 44px; height: 44px; border-radius: 50%;
-            background: rgba(20, 20, 35, 0.9);
-            border: 1px solid rgba(255,255,255,0.15);
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: background 0.3s ease, transform 0.2s ease;
-            /* z-index sangat tinggi agar tidak tertimpa stacking context apapun */
-            z-index: 9999;
-            color: var(--fg);
-            /* Paksa buat layer sendiri — hindari rendering bug di WebView/1DM */
-            transform: translateZ(0);
-            -webkit-transform: translateZ(0);
-            will-change: auto;
+        /* Share button — pakai absolute di dalam wrapper fixed-independen */
+        .share-wrapper {
+            position: fixed;
+            top: 0; left: 0;
+            width: 0; height: 0;
+            overflow: visible;
+            z-index: 2147483647; /* nilai max integer z-index */
+            pointer-events: none;
         }
 
-        .share-btn:hover { background: rgba(59,130,246,0.2); border-color: var(--accent); transform: scale(1.1); }
-        .share-btn:active { transform: scale(0.95); }
+        .share-btn {
+            position: absolute;
+            top: 1.25rem;
+            left: 1.25rem;
+            pointer-events: auto;
+            display: -webkit-inline-flex;
+            display: inline-flex;
+            -webkit-align-items: center;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.875rem;
+            border-radius: 8px;
+            background: #1a1a2e;
+            border: 1px solid rgba(255,255,255,0.18);
+            color: #f0f0f5;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 500;
+            cursor: pointer;
+            /* Tidak pakai transform atau will-change sama sekali */
+            text-decoration: none;
+            white-space: nowrap;
+            /* Satu-satunya property yang butuh support luas */
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+        }
+
+        .share-btn:active {
+            background: #222240;
+        }
+
+        .share-btn svg {
+            flex-shrink: 0;
+        }
 
         .profile-section {
             display: flex; flex-direction: column; align-items: center;
@@ -360,11 +385,9 @@
             animation: none !important;
         }
 
-        /* share-btn di lite-mode: pastikan selalu visible & di atas segalanya */
+        /* share-btn di lite-mode */
         html.lite-mode .share-btn {
-            opacity: 1 !important;
-            visibility: visible !important;
-            background: rgba(20, 20, 35, 0.95) !important;
+            background: #1a1a2e !important;
             border-color: rgba(255,255,255,0.2) !important;
         }
 
@@ -412,15 +435,19 @@
     <div class="noise-overlay"></div>
     <div id="particles"></div>
 
-    <button class="share-btn" id="shareBtn" aria-label="Share profile">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="18" cy="5" r="3"></circle>
-            <circle cx="6" cy="12" r="3"></circle>
-            <circle cx="18" cy="19" r="3"></circle>
-            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
-            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
-        </svg>
-    </button>
+    <!-- Share wrapper: elemen fixed yang berdiri sendiri, di luar semua stacking context -->
+    <div class="share-wrapper" id="shareWrapper">
+        <button class="share-btn" id="shareBtn" aria-label="Share profile">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="18" cy="5" r="3"></circle>
+                <circle cx="6" cy="12" r="3"></circle>
+                <circle cx="18" cy="19" r="3"></circle>
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+            </svg>
+            <span>Share</span>
+        </button>
+    </div>
 
     <main class="main-content">
         <section class="profile-section">
@@ -566,7 +593,7 @@
             if (shareBtn) {
                 shareBtn.style.opacity    = '1';
                 shareBtn.style.visibility = 'visible';
-                shareBtn.style.display    = 'flex';
+                shareBtn.style.display    = 'inline-flex';
             }
 
             function toggleBodyScroll(isOpen) {
