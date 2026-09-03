@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /AsherGo.html
+Disallow: /CHANGELOG.md
+
+Sitemap: https://asher-mod-bio.pages.dev/sitemap.xml
