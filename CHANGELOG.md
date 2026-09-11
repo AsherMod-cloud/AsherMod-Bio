@@ -29,4 +29,4 @@
 ### Changed
 
 - Mengganti favicon halaman utama menggunakan **profile image AsherMod**.
-- Memperbarui Apple Touch Icon agar menggunakan profile image yang sama.
+- Memperbarui Apple Touch Icon agar menggunakan profile image yang sama. 
