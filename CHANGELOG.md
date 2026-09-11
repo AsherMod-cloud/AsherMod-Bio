@@ -25,3 +25,8 @@
 
 - Menambahkan meta tag `google-site-verification` untuk property URL Prefix `https://asher-mod-bio.pages.dev/`.
 - Memperbarui `SEO-GUIDE.md` dengan alur verifikasi URL Prefix dan troubleshooting error pengambilan sitemap pada Search Console.
+
+### Changed
+
+- Mengganti favicon halaman utama menggunakan **profile image AsherMod**.
+- Memperbarui Apple Touch Icon agar menggunakan profile image yang sama.
