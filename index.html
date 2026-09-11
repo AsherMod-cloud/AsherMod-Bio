@@ -11,7 +11,7 @@
     <link rel="canonical" href="https://asher-mod-bio.pages.dev/">
     <meta property="og:type" content="website">
     <meta property="og:locale" content="id_ID">
-    <meta property="og:title" content="AsherMod — Game Mods, Emulator & Link Resmi">
+    <meta property="og:title" content="AsherMod — Bio Link">
     <meta property="og:description" content="Game mods, emulator games, request, referral, dan link resmi AsherMod.">
     <meta property="og:image" content="https://asher-mod-bio.pages.dev/assets/image/profile.jpg">
     <meta property="og:image:type" content="image/jpeg">
@@ -19,11 +19,11 @@
     <meta property="og:url" content="https://asher-mod-bio.pages.dev/">
     <meta property="og:site_name" content="AsherMod">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="AsherMod — Game Mods, Emulator & Link Resmi">
+    <meta name="twitter:title" content="AsherMod — Bio Link">
     <meta name="twitter:description" content="Game mods, emulator games, request, referral, dan link resmi AsherMod.">
     <meta name="twitter:image" content="https://asher-mod-bio.pages.dev/assets/image/profile.jpg">
     <meta name="twitter:image:alt" content="Foto profil AsherMod">
-    <title>AsherMod — Game Mods, Emulator & Link Resmi</title>
+    <title>AsherMod — Bio Link</title>
     <link rel="icon" type="image/jpeg" href="/assets/image/profile.jpg">
     <link rel="apple-touch-icon" href="/assets/image/profile.jpg">
     <meta name="theme-color" content="#0a0a0f">
@@ -40,7 +40,7 @@
         {
             "@context": "https://schema.org",
             "@type": "ProfilePage",
-            "name": "AsherMod — Game Mods, Emulator & Link Resmi",
+            "name": "AsherMod — Bio Link",
             "description": "Bio link resmi AsherMod untuk game mods, emulator games, request, referral, dan komunitas gaming Indonesia.",
             "url": "https://asher-mod-bio.pages.dev/",
             "inLanguage": "id-ID",
@@ -430,6 +430,12 @@
             /* FIX: pastikan bisa diklik meski ada overlay partikel */
             z-index: 3;
             -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            user-select: none;
+            -webkit-user-drag: none;
+            user-drag: none;
         }
         .avatar-container:hover {
             transform: scale(1.03);
@@ -476,12 +482,20 @@
             border: 3px solid var(--bg);
             transition: border-color var(--transition-smooth);
             user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-user-drag: none;
+            pointer-events: none;
         }
         .avatar img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             pointer-events: none;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-user-drag: none;
+            user-drag: none;
         }
 
         .avatar-glow {
@@ -1250,7 +1264,7 @@
                 <div class="avatar-glow"></div>
                 <div class="avatar-ring"></div>
                 <div class="avatar">
-                    <img src="/assets/image/profile.jpg" alt="Profile AsherMod" loading="eager">
+                    <img src="/assets/image/profile.jpg" alt="Profile AsherMod" loading="eager" draggable="false" oncontextmenu="return false">
                 </div>
             </div>
             <h1 class="profile-name font-display">AsherMod</h1>
@@ -1768,6 +1782,13 @@
 			var secretClicks = 0;
 			var secretTimer  = null;
 			var totalClicks  = 0; // counter kumulatif untuk easter egg 99 klik
+
+      if (avatarEl) {
+    avatarEl.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        return false;
+    });
+                  }
 
 			// Blur/unblur halaman
 			function setPageBlur(on) {
