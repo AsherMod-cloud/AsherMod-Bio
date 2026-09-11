@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 
-### Added
+### Added 
 
 - Menambahkan CTA eksternal **AsherMod Bypass** menuju `https://ashermod-bypass.pages.dev` pada halaman utama.
 - Menambahkan halaman `referral.html` dengan tiga referral shortlink: Safelinku, Adsafelink, dan Snacklink.
