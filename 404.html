@@ -20,23 +20,41 @@
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
     <script>
-        (function() {
-            var root = document.documentElement;
-            var ua = navigator.userAgent.toLowerCase();
-            var isAndroid = ua.includes("android");
-            var isWebView = isAndroid && (ua.includes(" wv)") || ua.includes(";wv)") || ua.includes("wv "));
-            var is1DM = ua.includes("1dm") || ua.includes("1dmb") || ua.includes("idmbrowser");
-            var lowMemory = navigator.deviceMemory && navigator.deviceMemory <= 2;
-            var noBackdrop = !CSS.supports("backdrop-filter", "blur(5px)");
-            if (isWebView || is1DM) root.classList.add("is-webview");
-            if (lowMemory) root.classList.add("low-end");
-            if (noBackdrop) root.classList.add("no-blur");
-            if (is1DM) root.classList.add("is-1dm");
-            if (isWebView || is1DM || lowMemory) root.classList.add("lite-mode");
-            var savedTheme = localStorage.getItem('asher-theme') || 'dark';
-            root.setAttribute('data-theme', savedTheme);
-        })();
-    </script>
+    (function() {
+        var root = document.documentElement;
+        var ua = navigator.userAgent.toLowerCase();
+        var isAndroid = ua.includes("android");
+
+        // Deteksi PWA standalone (biar nggak dianggap WebView)
+        var isStandalone = window.matchMedia('(display-mode: standalone)').matches
+                        || window.navigator.standalone === true
+                        || document.referrer.includes('android-app://');
+
+        // WebView asli — kecualiin PWA standalone
+        var isWebView = isAndroid && !isStandalone
+                     && (ua.includes(" wv)") || ua.includes(";wv)") || ua.includes("wv "));
+
+        // 1DM Browser
+        var is1DM = ua.includes("1dm") || ua.includes("1dmb") || ua.includes("idmbrowser");
+
+        // Low-end: butuh RAM rendah DAN CPU lemah
+        var lowRAM = navigator.deviceMemory && navigator.deviceMemory <= 2;
+        var lowCPU = navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2;
+        var lowMemory = lowRAM && lowCPU;
+
+        // Deteksi backdrop-filter support
+        var noBackdrop = !CSS.supports("backdrop-filter", "blur(5px)");
+
+        if (isWebView || is1DM) root.classList.add("is-webview");
+        if (lowMemory) root.classList.add("low-end");
+        if (noBackdrop) root.classList.add("no-blur");
+        if (is1DM) root.classList.add("is-1dm");
+        if (isWebView || is1DM || lowMemory) root.classList.add("lite-mode");
+
+        var savedTheme = localStorage.getItem('asher-theme') || 'dark';
+        root.setAttribute('data-theme', savedTheme);
+    })();
+</script>
 
     <style>
         :root {

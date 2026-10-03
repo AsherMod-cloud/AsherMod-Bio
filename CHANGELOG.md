@@ -2,6 +2,47 @@
 
 > **Catatan:** Changelog ini mulai aktif dipelihara sejak **14 Agustus 2026**. Perubahan sebelum tanggal tersebut tidak tercatat secara rinci.
 
+## [Unreleased]
+
+### Added
+
+- Menambahkan CTA eksternal **Emulator Games ID** menuju `https://emulator-games-id.pages.dev` pada halaman utama.
+- Menambahkan visual accent ungu khusus untuk CTA Emulator Games ID agar dapat dibedakan dari channel WhatsApp dan Referral Shortlink.
+
+### Fixed
+
+- Memperbaiki deteksi `lite-mode` yang sebelumnya menganggap **PWA standalone** sebagai WebView, sehingga background smoke & particle tidak muncul saat aplikasi diinstall dari Chrome.
+- Menambahkan deteksi `isStandalone` melalui tiga metode: `matchMedia('(display-mode: standalone)')`, `navigator.standalone`, dan `document.referrer.includes('android-app://')`.
+- Menggabungkan deteksi **low-memory** dengan `navigator.hardwareConcurrency` (RAM ≤ 2GB **dan** CPU ≤ 2 core) agar perangkat dengan RAM 2GB namun CPU 4-core tidak lagi masuk `lite-mode` secara keliru.
+
+## [1.1.1] - 2 Oktober 2026
+
+### Changed
+
+- Mengubah label **Support Me** menjadi **Donate Me**.
+- Mengubah link WhatsApp (`https://wa.me/6283872646423`) menjadi (`https://wa.me/Asher_Mod`).
+- Mengembalikan link **Feedback & Request** pada halaman utama.
+- Menghapus CTA/section **AsherMod Bypass** dari halaman utama.
+- Mempertahankan label **Donate Me** dan konfigurasi installable PWA.
+- Memperbaiki JSON-LD dan menyelaraskan metadata SEO dengan navigasi yang sedang aktif.
+
+## [1.1.0] - 1 Oktober 2026
+
+Pembaruan navigasi kontak dan konsolidasi paket rilis setelah audit perubahan manual pada halaman 404.
+
+### Changed
+
+- Menghapus menu **Feedback & Request** dari halaman utama.
+- Menghapus CTA **AsherMod Bypass** dari halaman utama sesuai struktur navigasi terbaru.
+- Menambahkan ikon inline SVG dan accent biru khusus untuk link Contact agar tetap konsisten dengan tema Dark/Blue.
+- Memperbarui deskripsi SEO, Open Graph, Twitter Card, JSON-LD, dan Web Manifest agar mencerminkan navigasi referral dan kontak terbaru.
+- Mempertahankan `referral.html`, fallback **Segera Hadir**, `404.html`, sitemap, robots, dan verifikasi Google Search Console.
+
+### Fixed
+
+- Menghilangkan referensi CSS dan markup yang tidak lagi dipakai untuk menu Bypass.
+- Menambahkan `SEO-GUIDE.md` ke paket rilis agar prosedur verifikasi URL Prefix dan sitemap terdokumentasi bersama proyek.
+
 ## [1.0.0] - 11 September 2026
 
 Rilis stabil pertama project bio link AsherMod setelah penambahan fitur referral, CTA AsherMod Bypass, dan optimasi SEO.
